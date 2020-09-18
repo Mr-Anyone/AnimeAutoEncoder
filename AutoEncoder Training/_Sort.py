@@ -2,11 +2,21 @@ import os
 import shutil
 from PIL import Image
 
-Train = os.path.join(os.curdir, "Train", "Face")
-Validation = os.path.join(os.curdir, "Validation", "Face")
 
-image_dir = os.path.join(os.curdir, "Orginal Image")
-save_dir = Train
+def make_folder(path):
+    try:
+        os.makedirs(path)
+    except Exception as e:
+        print(f"Already A Folder in {path}, Error Message: {e}")
+
+
+Save_Train = os.path.join(os.curdir, "Train", "Face")
+Save_Validation = os.path.join(os.curdir, "Validation", "Face")
+image_dir = os.path.join(os.curdir, "Original Image")
+
+make_folder(Save_Train)
+make_folder(Save_Validation)
+
 
 def open_image(path):
     try:
@@ -14,32 +24,31 @@ def open_image(path):
         if img.height > 64:
             return img.resize((64, 64))
         else:
-            return None
+            pass
     except Exception as e:
         print(f"UNKNOWN ERROR {path}, {e}")
 
 
-def move():
-    file_name  = os.listdir(Train)
-    print(f"Moved This Amount Of File: {int(len(file_name)*0.1)}")
+def open_images(path):
+    files = [os.path.join(path, name) for name in os.listdir(path)]
+    count = 0
+    for file in files:
 
-    for index in range(int(len(file_name)*0.1)):
-        name = file_name[index]
-        shutil.move(os.path.join(Train, name), os.path.join(Validation, name))
+        if ".jpg" in file:
+            img = open_image(file)
+            if img:
+                move(file, os.path.join(Save_Train, f"Anime_Face{count}.jpg"))
+                count += 1
 
+                break
+
+
+def move(p1, p2):
+    shutil.move(p1, p2)
 
 
 def main():
-    imgs = os.listdir(image_dir)
-
-    for index in range(len(imgs)):
-        if ".jpg" in imgs[index]:
-            a = open_image(os.path.join(image_dir, imgs[index]))
-            if a:
-                a.save(os.path.join(save_dir, f"Face {index + 902}.jpg"))
-
-    move()
-
+    open_image(image_dir)
 
 
 main()
