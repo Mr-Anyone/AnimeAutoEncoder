@@ -1,12 +1,12 @@
 import os
 from tkinter import *
-
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
+from joblib import dump, load
 from tensorflow import keras
 
 FILENAME = "Show.png"
+pca = load(os.path.join(os.curdir, "Config", 'Trained .joblib'))
 
 sliders = []
 mins = []
@@ -15,7 +15,7 @@ k = []
 
 row = 1
 col = 1
-col_count = 5
+col_count = 3
 run = False
 
 def lol():
@@ -39,12 +39,12 @@ def init():
 
 
 def show_img():
-    global FILENAME, sliders
+    global FILENAME, sliders, pca
     img = []
     for index in range(len(sliders)):
         img.append(sliders[index].get()/10 * (maxs[index] - mins[index]))
 
-    img = np.array([img])
+    img = pca.inverse_transform([img])
     img = decoder.predict(img).reshape((64, 64, 3))
 
 
@@ -66,8 +66,8 @@ class SliderWindows:
             self.button = Button(master, text='Show Image', command=show_img).grid(row=0,
                                                                                    column=int(col_count / 2) + 1)
 
-        for x in range(100):
-            w = Scale(master, from_=0, to=10, length=None, orient=HORIZONTAL)
+        for x in range(33):
+            w = Scale(master, from_=-10, to=10, length=None, orient=HORIZONTAL)
             w.grid(row=row, column=col)
             sliders.append(w)
 
